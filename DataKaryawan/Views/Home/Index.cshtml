@@ -1,0 +1,55 @@
+﻿@page "/karyawan"
+@using DataKaryawan.Models.DataKaryawan
+@inject HttpClient Http
+
+<h3>Daftar Karyawan</h3>
+
+@if (Employees == null || !Employees.Any())
+{
+    <p>Loading data karyawan...</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>NIK</th>
+                <th>Nama</th>
+                <th>Jenis Kelamin</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var karyawan in Employees)
+            {
+                <tr>
+                    <td>@karyawan.Nik</td>
+                    <td>@karyawan.Nama</td>
+                    <td>@karyawan.JenisKelamin</td>
+                    <td>
+                        <NavLink href="/karyawan/detail/@karyawan.Id">Detail</NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Employee> Employees;
+
+    protected override async Task OnInitializedAsync()
+    try
+    {
+        Employees = await Http.GetFromJsonAsync<List<Employee>>("api/HomeController");
+        if (Employees == null)
+        {
+            Employees = new List<Employee>(); // Prevent null reference
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error fetching data: {ex.Message}");
+    }
+}
+
